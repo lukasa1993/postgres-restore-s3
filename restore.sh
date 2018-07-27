@@ -61,11 +61,16 @@ fi
 echo "Finding latest backup"
 
 LATEST_BACKUP=$(aws ${AWS_ARGS} s3 ls s3://$S3_BUCKET/$S3_PREFIX/$POSTGRES_DATABASE --recursive | sort | tail -n 1 | awk '{ print $4 }')
+DUMP_FILE="/tmp/dump.sql.gz"
+DUMP_FILE_SQL="/tmp/dump.sql"
+
+rm -rf ${DUMP_FILE}
+rm -rf ${DUMP_FILE_SQL}
 
 echo "Fetching ${LATEST_BACKUP} from S3"
 
-aws ${AWS_ARGS} s3 cp s3://$S3_BUCKET/${LATEST_BACKUP} dump.sql.gz
-gzip -d dump.sql.gz
+aws ${AWS_ARGS} s3 cp s3://$S3_BUCKET/${LATEST_BACKUP} DUMP_FILE
+gzip -d DUMP_FILE
 
 if [ "${DROP_PUBLIC}" == "yes" ]; then
 	echo "Recreating the public schema"
@@ -74,7 +79,7 @@ fi
 
 echo "Restoring ${LATEST_BACKUP}"
 
-psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE < dump.sql
+psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE < DUMP_FILE_SQL
 
 echo "Restore complete"
 
