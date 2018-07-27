@@ -69,8 +69,8 @@ rm -rf ${DUMP_FILE_SQL}
 
 echo "Fetching ${LATEST_BACKUP} from S3"
 
-aws ${AWS_ARGS} s3 cp s3://$S3_BUCKET/${LATEST_BACKUP} DUMP_FILE
-gzip -d DUMP_FILE
+aws ${AWS_ARGS} s3 cp s3://$S3_BUCKET/${LATEST_BACKUP} ${DUMP_FILE}
+gzip -d ${DUMP_FILE}
 
 if [ "${DROP_PUBLIC}" == "yes" ]; then
 	echo "Recreating the public schema"
@@ -79,7 +79,7 @@ fi
 
 echo "Restoring ${LATEST_BACKUP}"
 
-psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE < DUMP_FILE_SQL
+psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE < ${DUMP_FILE_SQL}
 
 echo "Restore complete"
 
