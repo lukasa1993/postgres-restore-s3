@@ -79,7 +79,7 @@ fi
 
 echo "Restoring ${LATEST_BACKUP}"
 
-psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE < ${DUMP_FILE_SQL}
+psql $POSTGRES_HOST_OPTS -d $POSTGRES_DATABASE -f ${DUMP_FILE_SQL}
 
 echo "Restore complete"
 
